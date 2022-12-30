@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../providers/product.dart';
+import '../providers/products.dart';
+
+const title = 'title';
+const price = 'price';
+const description = 'description';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-product';
@@ -17,13 +23,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _imageUrlController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
   final _form = GlobalKey<FormState>();
-  Product _editedProduct = Product(
-    id: '',
+  late Product _editedProduct;
+  var _initValue = {
     title: '',
     description: '',
-    price: 0.0,
-    imageUrl: '',
-  );
+    price: '',
+  };
+  var _isInit = false;
 
   @override
   void initState() {
@@ -31,6 +37,35 @@ class _EditProductScreenState extends State<EditProductScreen> {
     //! on the TextFormField has been lost
     _imageUrlFocusNode.addListener(_updateImageUrl);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (!_isInit) {
+      String productId = '';
+      final fetchedIdObject = ModalRoute.of(context)!.settings.arguments;
+      if (fetchedIdObject != null) productId = fetchedIdObject as String;
+      if (productId.isNotEmpty) {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        _initValue = {
+          title: _editedProduct.title,
+          description: _editedProduct.description,
+          price: _editedProduct.price.toString(),
+        };
+        _imageUrlController.text = _editedProduct.imageUrl;
+      } else {
+        _editedProduct = Product(
+          id: '',
+          title: '',
+          description: '',
+          price: 0,
+          imageUrl: '',
+        );
+      }
+    }
+    _isInit = true;
+    super.didChangeDependencies();
   }
 
   @override
@@ -60,8 +95,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
     if (!isValid) {
       return;
     }
+
     _form.currentState!.save();
-    print(_editedProduct);
+    if (_editedProduct.id.isNotEmpty) {
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(_editedProduct.id, _editedProduct);
+    } else {
+      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    }
+    Navigator.of(context).pop();
   }
 
   @override
@@ -83,6 +125,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: ListView(
             children: [
               TextFormField(
+                initialValue: _initValue[title],
                 decoration: const InputDecoration(hintText: 'Title'),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
@@ -93,6 +136,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _initValue[price],
                 decoration: const InputDecoration(hintText: 'Price'),
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
@@ -118,6 +162,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _initValue[description],
                 decoration: const InputDecoration(hintText: 'Description'),
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
