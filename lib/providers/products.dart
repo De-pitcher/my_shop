@@ -6,9 +6,11 @@ import 'product.dart';
 
 const baseUrl =
     'https://fir-flutter-tutorial-c3453-default-rtdb.firebaseio.com/';
+const products = 'products';
+const endPoint = '.json';
 
 class Products with ChangeNotifier {
-   List<Product> _items = [
+  List<Product> _items = [
     // Product(
     //   id: 'p1',
     //   title: 'Red Shirt',
@@ -56,20 +58,10 @@ class Products with ChangeNotifier {
     return _items.where((productItem) => productItem.isFavorite).toList();
   }
 
-  // void showFavorite() {
-  //   _isFavorite = true;
-  //   notifyListeners();
-  // }
-
-  // void showAll() {
-  //   _isFavorite = false;
-  //   notifyListeners();
-  // }
-
   Product findById(String id) => items.firstWhere((prod) => prod.id == id);
 
   Future<void> fetchProducts() async {
-    final url = Uri.parse('${baseUrl}products.json');
+    final url = Uri.parse(baseUrl + products + endPoint);
     try {
       final response = await http.get(url);
       final extractedData = jsonDecode(response.body) as Map;
@@ -87,11 +79,9 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    final url = Uri.parse('${baseUrl}products.json');
+    final url = Uri.parse(baseUrl + products + endPoint);
     try {
       final response = await http.post(url, body: product.toJson());
-      // print(jsonDecode(response.body)['name']);
-
       product = product.copyWith(id: jsonDecode(response.body)['name']);
       _items.add(product);
       notifyListeners();
@@ -101,11 +91,18 @@ class Products with ChangeNotifier {
     }
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final productId = _items.indexWhere((prod) => prod.id == id);
     if (productId >= 0) {
-      _items[productId] = newProduct;
-      notifyListeners();
+      final url = Uri.parse('${baseUrl + products}/${id + endPoint}');
+      try {
+        await http.patch(url, body: newProduct.toJson()).then((_) {
+          _items[productId] = newProduct;
+          notifyListeners();
+        });
+      } catch (error) {
+        rethrow;
+      }
     } else {
       //...
     }
