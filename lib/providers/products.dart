@@ -38,7 +38,7 @@ class Products with ChangeNotifier {
     ),
   ];
 
-  bool _isFavorite = false;
+  final bool _isFavorite = false;
 
   List<Product> get items {
     if (_isFavorite) {
