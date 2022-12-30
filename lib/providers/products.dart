@@ -1,6 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'product.dart';
+
+const baseUrl =
+    'https://fir-flutter-tutorial-c3453-default-rtdb.firebaseio.com/';
 
 class Products with ChangeNotifier {
   final List<Product> _items = [
@@ -63,10 +68,30 @@ class Products with ChangeNotifier {
 
   Product findById(String id) => items.firstWhere((prod) => prod.id == id);
 
-  void addProduct(Product product) {
-    product = product.copyWith(id: DateTime.now().toString());
-    _items.add(product);
-    notifyListeners();
+  Future<void> fetchProducts() async {
+    final url = Uri.parse('$baseUrl + products.json');
+    try {
+      final response = await http.get(url);
+      print(response.body);
+    } catch (error) {
+      print(error);
+      rethrow;
+    }
+  }
+
+  Future<void> addProduct(Product product) async {
+    final url = Uri.parse('$baseUrl+products.json');
+    try {
+      final response = await http.post(url, body: product.toJson());
+      // print(jsonDecode(response.body)['name']);
+
+      product = product.copyWith(id: jsonDecode(response.body)['name']);
+      _items.add(product);
+      notifyListeners();
+    } catch (err) {
+      print(err);
+      rethrow;
+    }
   }
 
   void updateProduct(String id, Product newProduct) {

@@ -39,6 +39,8 @@ class UserProductItem extends StatelessWidget {
               onPressed: () {
                 customDialog(
                   context: context,
+                  isConfirmedNeeded: true,
+                  title: 'Are you sure?',
                   msg: 'Do you want to remove this product?',
                   isConfirmedHandler: () =>
                       Provider.of<Products>(context, listen: false)

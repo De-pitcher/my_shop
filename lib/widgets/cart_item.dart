@@ -41,6 +41,8 @@ class CartItem extends StatelessWidget {
       direction: DismissDirection.endToStart,
       confirmDismiss: (direction) {
         return customDialog(
+          isConfirmedNeeded: true,
+          title: 'Are you sure?',
           msg: 'Do you want to remove the item from the card?',
           context: context,
         );
