@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_shop/utils/custom_dialog.dart';
+import 'package:my_shop/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/cart.dart';

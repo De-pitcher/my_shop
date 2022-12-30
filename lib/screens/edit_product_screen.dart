@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/product.dart';
 import '../providers/products.dart';
-import '../utils/custom_dialog.dart';
+import '../utils/utils.dart';
 
 const title = 'title';
 const price = 'price';

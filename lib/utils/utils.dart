@@ -39,3 +39,23 @@ Future<bool?> customDialog({
     ),
   );
 }
+
+SnackBar customSnackBar({
+  required String text,
+  bool? showAction,
+  Function? actionHandler,
+}) {
+  return SnackBar(
+    content: Text(
+      text,
+      textAlign: TextAlign.center,
+    ),
+    duration: const Duration(seconds: 2),
+    action: showAction != null && showAction
+        ? SnackBarAction(
+            label: 'UNDO',
+            onPressed: () => actionHandler != null ? actionHandler() : null,
+          )
+        : null,
+  );
+}

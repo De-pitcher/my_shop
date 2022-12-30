@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
 import '../screens/product_detail_screen.dart';
+import '../utils/utils.dart';
 
 class ProductItem extends StatelessWidget {
   // final String id;
@@ -44,16 +45,12 @@ class ProductItem extends StatelessWidget {
               cart.addItem(product.id, product.title, product.price);
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Added item to cart!'),
-                  duration: const Duration(seconds: 2),
-                  action: SnackBarAction(
-                    label: 'UNDO',
-                    onPressed: () {
+                customSnackBar(
+                    text: 'Added item to cart!',
+                    showAction: true,
+                    actionHandler: () {
                       cart.removeSingleItem(product.id);
-                    },
-                  ),
-                ),
+                    }),
               );
             },
             color: Theme.of(context).colorScheme.secondary,
