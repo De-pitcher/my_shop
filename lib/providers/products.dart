@@ -63,6 +63,9 @@ class Products with ChangeNotifier {
     final url = Uri.parse(baseUrl + productsPath + endPoint);
     try {
       final response = await http.get(url);
+      if (jsonDecode(response.body) == null) {
+        return;
+      }
       final extractedData = jsonDecode(response.body) as Map;
       final loadedProduct = <Product>[];
       extractedData.forEach((prodId, prodData) {
