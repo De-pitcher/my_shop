@@ -1,5 +1,10 @@
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+
+import '../models/http_exception.dart';
+import '../utils/constants.dart';
 import './cart.dart';
 
 class OrderItem {
@@ -21,16 +26,29 @@ class Orders with ChangeNotifier {
 
   List<OrderItem> get orders => [..._orders];
 
-  void addOrder(List<CartItem> cartProducts, double total) {
-    _orders.insert(
-      0,
-      OrderItem(
-        id: DateTime.now().toString(),
-        amount: total,
-        products: cartProducts,
-        dateTime: DateTime.now(),
-      ),
-    );
-    notifyListeners();
+  Future<void> addOrder(List<CartItem> cartProducts, double total) async {
+    final url = Uri.parse(baseUrl + ordersPath + endPoint);
+    final timeStamp = DateTime.now();
+    try {
+      final response = await http.post(url,
+          body: jsonEncode({
+            'amount': total,
+            'dateTime': timeStamp.toIso8601String(),
+            'products': cartProducts.map((cp) => cp.toMap()).toList()
+          }));
+
+      _orders.insert(
+        0,
+        OrderItem(
+          id: jsonDecode(response.body)['name'],
+          amount: total,
+          products: cartProducts,
+          dateTime: timeStamp,
+        ),
+      );
+      notifyListeners();
+    } catch (_) {
+      throw HttpException('An error occurred!');
+    }
   }
 }

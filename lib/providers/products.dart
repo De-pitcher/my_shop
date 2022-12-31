@@ -1,14 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../models/http_exception.dart';
-import 'product.dart';
 
-const baseUrl =
-    'https://fir-flutter-tutorial-c3453-default-rtdb.firebaseio.com/';
-const products = 'products';
-const endPoint = '.json';
+import '../models/http_exception.dart';
+import './product.dart';
+import '../utils/constants.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -62,7 +60,7 @@ class Products with ChangeNotifier {
   Product findById(String id) => items.firstWhere((prod) => prod.id == id);
 
   Future<void> fetchProducts() async {
-    final url = Uri.parse(baseUrl + products + endPoint);
+    final url = Uri.parse(baseUrl + productsPath + endPoint);
     try {
       final response = await http.get(url);
       final extractedData = jsonDecode(response.body) as Map;
@@ -74,20 +72,24 @@ class Products with ChangeNotifier {
       });
       _items = loadedProduct;
     } catch (error) {
-      print(error);
+      if (kDebugMode) {
+        print(error);
+      }
       rethrow;
     }
   }
 
   Future<void> addProduct(Product product) async {
-    final url = Uri.parse(baseUrl + products + endPoint);
+    final url = Uri.parse(baseUrl + productsPath + endPoint);
     try {
       final response = await http.post(url, body: product.toJson());
       product = product.copyWith(id: jsonDecode(response.body)['name']);
       _items.add(product);
       notifyListeners();
     } catch (err) {
-      print(err);
+      if (kDebugMode) {
+        print(err);
+      }
       rethrow;
     }
   }
@@ -95,7 +97,7 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async {
     final productId = _items.indexWhere((prod) => prod.id == id);
     if (productId >= 0) {
-      final url = Uri.parse('${baseUrl + products}/${id + endPoint}');
+      final url = Uri.parse('${baseUrl + productsPath}/${id + endPoint}');
       try {
         await http.patch(url, body: newProduct.toJson()).then((_) {
           _items[productId] = newProduct;
@@ -110,7 +112,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = Uri.parse('${baseUrl + products}/${id}');
+    final url = Uri.parse('${baseUrl + productsPath}/${id + endPoint}');
     // final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     // dynamic existingProduct = _items[existingProductIndex];
     _items.removeWhere((prod) => prod.id == id);

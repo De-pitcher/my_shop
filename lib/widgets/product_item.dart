@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,7 +33,23 @@ class ProductItem extends StatelessWidget {
             icon: Icon(
               product.isFavorite ? Icons.favorite : Icons.favorite_border,
             ),
-            onPressed: () => product.toggleIsFavorite(),
+            onPressed: () async {
+              final oldVal = product.isFavorite;
+              try {
+                await product.toggleIsFavorite();
+              } on SocketException {
+                product.undoFav(oldVal);
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  customSnackBar(text: 'Network Issue! bawo'),
+                );
+              } catch (_) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  customSnackBar(text: 'An Error occurred!'),
+                );
+              }
+            },
             color: Theme.of(context).colorScheme.secondary,
           ),
           backgroundColor: Colors.black87,

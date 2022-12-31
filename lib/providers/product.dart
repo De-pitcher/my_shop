@@ -1,7 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import '../models/http_exception.dart';
+import '../utils/constants.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -19,9 +24,28 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void toggleIsFavorite() {
+  void undoFav(bool oldVal) {
+    isFavorite = oldVal;
+    notifyListeners();
+  }
+
+  Future<void> toggleIsFavorite() async {
+    final url = Uri.parse('${baseUrl + productsPath}/${id + endPoint}');
+    var currentProduct = this;
+    final oldVal = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
+    final response = await http
+        .patch(
+          url,
+          body: currentProduct.copyWith(isFavorite: !isFavorite).toJson(),
+        )
+        .timeout(const Duration(seconds: 5));
+    print(response.statusCode);
+    if (response.statusCode >= 400) {
+      undoFav(oldVal);
+      throw HttpException('Having problem connecting to the internet');
+    }
   }
 
   Product copyWith({
