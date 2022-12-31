@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
+import '../utils/api_key.dart';
 import '../models/http_exception.dart';
 
 class Auth with ChangeNotifier {
@@ -10,10 +11,21 @@ class Auth with ChangeNotifier {
   DateTime? _expiryDate;
   String? _userId;
 
+  bool get isAuth => token != null;
+
+  String? get token {
+    if (_expiryDate != null &&
+        _expiryDate!.isAfter(DateTime.now()) &&
+        _token != null) {
+      return _token!;
+    }
+    return null;
+  }
+
   Future<void> _authenticate(
       String email, String password, String urlPath) async {
     final url =
-        'https://identitytoolkit.googleapis.com/v1/accounts:$urlPath?key=AIzaSyCahysMQzlkZOpxZHbxytB8zqCrLDpUp68';
+        'https://identitytoolkit.googleapis.com/v1/accounts:$urlPath?key=$API_KEY';
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -32,7 +44,6 @@ class Auth with ChangeNotifier {
     } catch (error) {
       rethrow;
     }
-    
 
     // print(jsonDecode(response.body));
   }
