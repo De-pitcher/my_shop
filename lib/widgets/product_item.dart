@@ -39,7 +39,7 @@ class ProductItem extends StatelessWidget {
               final oldVal = product.isFavorite;
               try {
                 await product.toggleIsFavorite(
-                    authData.token!, authData.userId);
+                    authData.token, authData.userId);
               } on SocketException {
                 product.undoFav(oldVal!);
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();

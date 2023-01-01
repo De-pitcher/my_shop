@@ -13,17 +13,20 @@ class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
 
   String? authToken;
+  String? userId;
 
   /// Used with [ChangeNotifierProxyProvider] to access the token
   /// in the [Auth] provider.
   void update(Auth auth) {
     authToken = auth.token;
+    userId = auth.userId;
   }
 
   List<OrderItem> get orders => [..._orders];
 
   Future<void> fetchOrders() async {
-    final response = await http.get(Uri.parse('$ordersUrl?auth=$authToken'));
+    final response = await http
+        .get(Uri.parse('$baseUrl/orders/$userId.json?auth=$authToken'));
     final List<OrderItem> loadedOrders = [];
     if (jsonDecode(response.body) == null) {
       return;
@@ -47,7 +50,8 @@ class Orders with ChangeNotifier {
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final timeStamp = DateTime.now();
     try {
-      final response = await http.post(Uri.parse('$ordersUrl?auth=$authToken'),
+      final response = await http.post(
+          Uri.parse('$baseUrl/orders/$userId.json?auth=$authToken'),
           body: jsonEncode({
             'amount': total,
             'dateTime': timeStamp.toIso8601String(),
