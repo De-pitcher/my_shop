@@ -6,17 +6,24 @@ import 'package:http/http.dart' as http;
 import '../models/cart_item.dart';
 import '../models/http_exception.dart';
 import '../models/order_item.dart';
+import './auth.dart';
 import '../utils/constants.dart';
 
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
 
-  final url = Uri.parse(baseUrl + ordersPath + endPoint);
+  String? authToken;
+
+  /// Used with [ChangeNotifierProxyProvider] to access the token
+  /// in the [Auth] provider.
+  void update(Auth auth) {
+    authToken = auth.token;
+  }
 
   List<OrderItem> get orders => [..._orders];
 
   Future<void> fetchOrders() async {
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse('$ordersUrl?auth=$authToken'));
     final List<OrderItem> loadedOrders = [];
     if (jsonDecode(response.body) == null) {
       return;
@@ -40,7 +47,7 @@ class Orders with ChangeNotifier {
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final timeStamp = DateTime.now();
     try {
-      final response = await http.post(url,
+      final response = await http.post(Uri.parse('$ordersUrl?auth=$authToken'),
           body: jsonEncode({
             'amount': total,
             'dateTime': timeStamp.toIso8601String(),

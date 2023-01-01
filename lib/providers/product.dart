@@ -29,8 +29,8 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleIsFavorite() async {
-    final url = Uri.parse('${baseUrl + productsPath}/${id + endPoint}');
+  Future<void> toggleIsFavorite(String token) async {
+      final url = Uri.parse('$baseUrl/products/$id.json?auth=$token');
     var currentProduct = this;
     final oldVal = isFavorite;
     isFavorite = !isFavorite;

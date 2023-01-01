@@ -17,7 +17,7 @@ class HttpException implements Exception {
       case 'WEAK_PASSWORD':
         return 'This password is too weak';
       case 'EMAIL_NOT_FOUND':
-        return '';
+        return 'Email does not exist!';
       case 'INVALID_EMAIL':
         return 'This is not a valid email address.';
       case 'USER_NOT_FOUND':

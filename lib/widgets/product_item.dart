@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/auth.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
 import '../screens/product_detail_screen.dart';
@@ -22,8 +23,9 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final product = Provider.of<Product>(context);
+    final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
     // print('ProductItem rebuild build()');
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -36,7 +38,7 @@ class ProductItem extends StatelessWidget {
             onPressed: () async {
               final oldVal = product.isFavorite;
               try {
-                await product.toggleIsFavorite();
+                await product.toggleIsFavorite(authData.token!);
               } on SocketException {
                 product.undoFav(oldVal);
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();

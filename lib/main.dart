@@ -26,14 +26,17 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (ctx) => Auth(),
         ),
-        ChangeNotifierProvider(
+        ChangeNotifierProxyProvider<Auth, Products>(
           create: (ctx) => Products(),
+          update: (ctx, auth, products) => products!..update(auth) 
+          // Products(auth.token!, previouseProducts == null ? [] : previouseProducts.items),
         ),
         ChangeNotifierProvider(
           create: (ctx) => Cart(),
         ),
-        ChangeNotifierProvider(
+        ChangeNotifierProxyProvider<Auth, Orders>(
           create: (ctx) => Orders(),
+          update: (ctx, auth, orders) => orders!..update(auth),
         ),
       ],
       child: Consumer<Auth>(
@@ -48,7 +51,8 @@ class MyApp extends StatelessWidget {
               secondary: Colors.deepOrange,
             ),
           ),
-          home: auth.isAuth ? const ProductOverviewScreen() : const AuthScreen(),
+          home:
+              auth.isAuth ? const ProductOverviewScreen() : const AuthScreen(),
           routes: {
             ProductDetailScreen.routeName: (_) => const ProductDetailScreen(),
             CartScreen.routeName: (_) => const CartScreen(),

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -135,15 +136,16 @@ class _AuthCardState extends State<AuthCard> {
         );
       } on HttpException catch (error) {
         print(error);
-
         var errorMessage = HttpException.errorMessageFromAuthException(
           error.message,
           'Authentication Failed!',
         );
         _showdDialog(errorMessage);
+      } on SocketException catch (_) {
+        const errorMessage = 'No internet!';
+        _showdDialog(errorMessage);
       } catch (error) {
         print(error);
-
         const errorMessage =
             'Could not authenticate you. Please try again later!';
         _showdDialog(errorMessage);
