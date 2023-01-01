@@ -23,7 +23,7 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final product = Provider.of<Product>(context, listen: false);
+    final product = Provider.of<Product>(context);
     final cart = Provider.of<Cart>(context, listen: false);
     final authData = Provider.of<Auth>(context, listen: false);
     // print('ProductItem rebuild build()');
@@ -33,14 +33,15 @@ class ProductItem extends StatelessWidget {
         footer: GridTileBar(
           leading: IconButton(
             icon: Icon(
-              product.isFavorite ? Icons.favorite : Icons.favorite_border,
+              product.isFavorite! ? Icons.favorite : Icons.favorite_border,
             ),
             onPressed: () async {
               final oldVal = product.isFavorite;
               try {
-                await product.toggleIsFavorite(authData.token!);
+                await product.toggleIsFavorite(
+                    authData.token!, authData.userId);
               } on SocketException {
-                product.undoFav(oldVal);
+                product.undoFav(oldVal!);
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 ScaffoldMessenger.of(context).showSnackBar(
                   customSnackBar(text: 'Network Issue! bawo'),
@@ -62,14 +63,14 @@ class ProductItem extends StatelessWidget {
           trailing: IconButton(
             icon: const Icon(Icons.shopping_cart),
             onPressed: () {
-              cart.addItem(product.id, product.title, product.price);
+              cart.addItem(product.id!, product.title, product.price);
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
                 customSnackBar(
                     text: 'Added item to cart!',
                     showAction: true,
                     actionHandler: () {
-                      cart.removeSingleItem(product.id);
+                      cart.removeSingleItem(product.id!);
                     }),
               );
             },

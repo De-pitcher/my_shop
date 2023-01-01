@@ -46,47 +46,65 @@ class Products with ChangeNotifier {
 
   final bool _isFavorite = false;
 
-  String? token;
+  String? authToken;
+
+  String? userId;
 
   // Products(this.token, this._items);
 
-  /// Used with [ChangeNotifierProxyProvider] to access the token 
-  /// in the [Auth] provider. 
+  /// Used with [ChangeNotifierProxyProvider] to access the token
+  /// in the [Auth] provider.
   void update(Auth auth) {
-    token = auth.token;
+    authToken = auth.token;
+    userId = auth.userId;
   }
 
   List<Product> get items {
     if (_isFavorite) {
-      return _items.where((prod) => prod.isFavorite).toList();
+      return _items.where((prod) => prod.isFavorite!).toList();
     }
     return [..._items];
   }
 
   List<Product> get showFavoriteItems {
-    return _items.where((productItem) => productItem.isFavorite).toList();
+    return _items.where((productItem) => productItem.isFavorite!).toList();
   }
 
   Product findById(String id) => items.firstWhere((prod) => prod.id == id);
 
-  Future<void> fetchProducts() async {
-    final url = Uri.parse('$productsUrl?auth=$token');
+  Future<void> fetchProducts([bool filterByUser = false]) async {
+    final filterString = filterByUser ?'&orderBy="creatorId"&equalTo="$userId"' : '';
+    var url = Uri.parse('$productsUrl?auth=$authToken$filterString');
     try {
       final response = await http.get(url);
       final responseData = jsonDecode(response.body);
+      // print(responseData);
+      url = Uri.parse('$baseUrl/user-favorites/$userId.json?auth=$authToken');
+
+      final favoriteResponse = await http.get(url);
+      final favoriteData = jsonDecode(favoriteResponse.body);
       if (responseData == null) {
         return;
       } else if (responseData['error'] != null) {
         throw HttpException(responseData['error']);
       }
-      // print(jsonDecode(response.body));
-      final extractedData = jsonDecode(response.body) as Map;
+
+      final extProdData = responseData as Map;
+      final extFavoriteData = favoriteData != null ? favoriteData as Map : {};
       final loadedProduct = <Product>[];
-      extractedData.forEach((prodId, prodData) {
+      extProdData.forEach((prodId, prodData) {
+        // print(prodId);
         loadedProduct.add(
-          Product.fromMap(prodData).copyWith(id: prodId),
+          Product.fromMap(prodData).copyWith(
+            id: prodId,
+            title: prodData['title'],
+            description: prodData['description'],
+            price: prodData['price'],
+            isFavorite: extFavoriteData[prodId] ?? false,
+          ),
         );
       });
+      // print(loadedProduct);
       _items = loadedProduct;
     } catch (error) {
       if (kDebugMode) {
@@ -97,9 +115,20 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    final url = Uri.parse('$productsUrl?auth=$token');
+    final url = Uri.parse('$productsUrl?auth=$authToken');
     try {
-      final response = await http.post(url, body: product.toJson());
+      final response = await http.post(
+        url,
+        body: jsonEncode(
+          {
+            'title': product.title,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl,
+            'creatorId': userId,
+          },
+        ),
+      );
       product = product.copyWith(id: jsonDecode(response.body)['name']);
       _items.add(product);
       notifyListeners();
@@ -114,9 +143,21 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async {
     final productId = _items.indexWhere((prod) => prod.id == id);
     if (productId >= 0) {
-      final url = Uri.parse('$baseUrl/products/$id.json?auth=$token');
+      final url = Uri.parse('$baseUrl/products/$id.json?auth=$authToken');
       try {
-        await http.patch(url, body: newProduct.toJson()).then((_) {
+        await http
+            .patch(
+          url,
+          body: jsonEncode(
+            {
+              'title': newProduct.title,
+              'description': newProduct.description,
+              'price': newProduct.price,
+              'imageUrl': newProduct.imageUrl,
+            },
+          ),
+        )
+            .then((_) {
           _items[productId] = newProduct;
           notifyListeners();
         });
@@ -129,7 +170,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = Uri.parse('$baseUrl/products/$id.json?auth=$token');
+    final url = Uri.parse('$baseUrl/products/$id.json?auth=$authToken');
     // final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     // dynamic existingProduct = _items[existingProductIndex];
     _items.removeWhere((prod) => prod.id == id);

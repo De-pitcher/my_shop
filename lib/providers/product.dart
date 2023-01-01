@@ -9,19 +9,19 @@ import '../models/http_exception.dart';
 import '../utils/constants.dart';
 
 class Product with ChangeNotifier {
-  final String id;
+  String? id;
   final String title;
   final String description;
   final double price;
   final String imageUrl;
-  bool isFavorite;
+  bool? isFavorite;
   Product({
-    required this.id,
+    this.id,
     required this.title,
     required this.description,
     required this.price,
     required this.imageUrl,
-    this.isFavorite = false,
+    this.isFavorite,
   });
 
   void undoFav(bool oldVal) {
@@ -29,21 +29,22 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleIsFavorite(String token) async {
-      final url = Uri.parse('$baseUrl/products/$id.json?auth=$token');
+  Future<void> toggleIsFavorite(String token, String userId) async {
+    final url =
+        Uri.parse('$baseUrl/user-favorites/$userId/$id.json?auth=$token');
     var currentProduct = this;
     final oldVal = isFavorite;
-    isFavorite = !isFavorite;
+    isFavorite = !isFavorite!;
     notifyListeners();
     final response = await http
-        .patch(
+        .put(
           url,
-          body: currentProduct.copyWith(isFavorite: !isFavorite).toJson(),
+          body: jsonEncode(isFavorite),
         )
         .timeout(const Duration(seconds: 5));
     print(response.statusCode);
     if (response.statusCode >= 400) {
-      undoFav(oldVal);
+      undoFav(oldVal!);
       throw HttpException('Having problem connecting to the internet');
     }
   }
@@ -79,12 +80,12 @@ class Product with ChangeNotifier {
 
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
-      id: map['id'] as String,
+      id: map['id'] != null ? map['id'] as String : null,
       title: map['title'] as String,
       description: map['description'] as String,
       price: map['price'] as double,
       imageUrl: map['imageUrl'] as String,
-      isFavorite: map['isFavorite'] as bool,
+      isFavorite: map['isFavorite'] != null ? map['isFavorite'] as bool : null,
     );
   }
 

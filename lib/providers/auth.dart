@@ -22,6 +22,8 @@ class Auth with ChangeNotifier {
     return null;
   }
 
+  String get userId => _userId!;
+
   Future<void> _authenticate(
       String email, String password, String urlPath) async {
     final url =
