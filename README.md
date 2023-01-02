@@ -1,16 +1,10 @@
 # my_shop
 
-A new Flutter project.
+my_shop is a simple e-commerce app that is built with flutter and firebase as the backend for authentication and storing data. The features includes:
 
-## Getting Started
+1. It displays products in the virtual/online shop (store) from where it can be added to a virtual cart. 
+2. You can filter the list of products that you mark as favorite.
+3. Your can make an order from the cart. 
+4. You can manage products yourself. You can do that by modifying the details of the products and you can as well create a new product yourselve.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+NB: It's an app built alongside learning so it's not perfect.
