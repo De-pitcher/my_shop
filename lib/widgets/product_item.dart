@@ -38,8 +38,7 @@ class ProductItem extends StatelessWidget {
             onPressed: () async {
               final oldVal = product.isFavorite;
               try {
-                await product.toggleIsFavorite(
-                    authData.token, authData.userId);
+                await product.toggleIsFavorite(authData.token, authData.userId);
               } on SocketException {
                 product.undoFav(oldVal!);
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -84,9 +83,18 @@ class ProductItem extends StatelessWidget {
               arguments: product.id,
             );
           },
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
+          child: Hero(
+            tag: product.id!,
+            child: FadeInImage(
+              placeholder:
+                  const AssetImage('assets/images/006 product-placeholder.png'),
+              image: NetworkImage(product.imageUrl),
+              fit: BoxFit.cover,
+              // child: Image.network(
+              //   product.imageUrl,
+              //   fit: BoxFit.cover,
+              // ),
+            ),
           ),
         ),
       ),
