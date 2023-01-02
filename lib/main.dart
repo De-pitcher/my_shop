@@ -13,6 +13,7 @@ import './providers/orders.dart';
 import './providers/products.dart';
 import './providers/cart.dart';
 import './providers/auth.dart';
+import './helpers/custom_route.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,12 +52,21 @@ class MyApp extends StatelessWidget {
                 ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(
               secondary: Colors.deepOrange,
             ),
+            pageTransitionsTheme: PageTransitionsTheme(
+              builders: {
+                TargetPlatform.android: CustomPageTransitionBuilder(),
+                TargetPlatform.iOS: CustomPageTransitionBuilder(),
+              },
+            ),
           ),
           home: auth.isAuth
               ? const ProductOverviewScreen()
               : FutureBuilder(
-                future: auth.tryAutoLogin(),
-                  builder: (ctx, authSnapshot) => authSnapshot.connectionState == ConnectionState.waiting ? SplashScreen() : const AuthScreen(),
+                  future: auth.tryAutoLogin(),
+                  builder: (ctx, authSnapshot) =>
+                      authSnapshot.connectionState == ConnectionState.waiting
+                          ? const SplashScreen()
+                          : const AuthScreen(),
                 ),
           routes: {
             ProductDetailScreen.routeName: (_) => const ProductDetailScreen(),
