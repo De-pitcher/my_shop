@@ -99,7 +99,8 @@ class AuthCard extends StatefulWidget {
   State<AuthCard> createState() => _AuthCardState();
 }
 
-class _AuthCardState extends State<AuthCard> {
+class _AuthCardState extends State<AuthCard>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.login;
   final Map<String, String> _authData = {
@@ -108,6 +109,33 @@ class _AuthCardState extends State<AuthCard> {
   };
   var _isLoading = false;
   final _passwordController = TextEditingController();
+  late AnimationController _controller;
+  late Animation<Size> _heightAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 360),
+    );
+    _heightAnimation = Tween<Size>(
+      begin: const Size(double.infinity, 260),
+      end: const Size(double.infinity, 320),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+      ),
+    );
+    // _heightAnimation.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   void _showdDialog(String errorMessage) {
     customDialog(
@@ -135,7 +163,7 @@ class _AuthCardState extends State<AuthCard> {
           _authData['password']!,
         );
       } on HttpException catch (error) {
-        print(error);
+        // print(error);
         var errorMessage = HttpException.errorMessageFromAuthException(
           error.message,
           'Authentication Failed!',
@@ -145,10 +173,10 @@ class _AuthCardState extends State<AuthCard> {
         const errorMessage = 'No internet!';
         _showdDialog(errorMessage);
       } catch (error) {
-        print(error);
+        // print(error);
         const errorMessage =
             'Could not authenticate you. Please try again later!';
-        // _showdDialog(errorMessage);
+        _showdDialog(errorMessage);
       }
     } else {
       // Sign user up
@@ -158,15 +186,14 @@ class _AuthCardState extends State<AuthCard> {
           _authData['password']!,
         );
       } on HttpException catch (error) {
-        print(error);
-
+        // print(error);
         var errorMessage = HttpException.errorMessageFromAuthException(
           error.message,
           'Authentication Failed!',
         );
         _showdDialog(errorMessage);
       } catch (error) {
-        print(error);
+        // print(error);
         const errorMessage =
             'Could not authenticate you. Please try again later!';
         _showdDialog(errorMessage);
@@ -182,10 +209,12 @@ class _AuthCardState extends State<AuthCard> {
       setState(() {
         _authMode = AuthMode.signup;
       });
+      _controller.forward();
     } else {
       setState(() {
         _authMode = AuthMode.login;
       });
+      _controller.reverse();
     }
   }
 
@@ -197,12 +226,20 @@ class _AuthCardState extends State<AuthCard> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 8.0,
-      child: Container(
-        height: _authMode == AuthMode.signup ? 320 : 260,
-        constraints:
-            BoxConstraints(minHeight: _authMode == AuthMode.signup ? 320 : 260),
-        width: deviceSize.width * 0.75,
-        padding: const EdgeInsets.all(16.0),
+      child: AnimatedBuilder(
+        animation: _heightAnimation,
+        builder: (ctx, ch) => Container(
+          // height: _authMode == AuthMode.signup ? 320 : 260,
+          height: _heightAnimation.value.height,
+          constraints: BoxConstraints(
+            //minHeight: _authMode == AuthMode.signup ? 320 : 260
+            minHeight: _heightAnimation.value.height,
+          ),
+
+          width: deviceSize.width * 0.75,
+          padding: const EdgeInsets.all(16.0),
+          child: ch,
+        ),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -277,7 +314,9 @@ class _AuthCardState extends State<AuthCard> {
                   onPressed: _switchAuthMode,
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 30.0, vertical: 4),
+                      horizontal: 30.0,
+                      vertical: 4,
+                    ),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     textStyle: TextStyle(
                       color: Theme.of(context).primaryColor,
