@@ -32,7 +32,7 @@ class Product with ChangeNotifier {
   Future<void> toggleIsFavorite(String token, String userId) async {
     final url =
         Uri.parse('$baseUrl/user-favorites/$userId/$id.json?auth=$token');
-    var currentProduct = this;
+    // var currentProduct = this;
     final oldVal = isFavorite;
     isFavorite = !isFavorite!;
     notifyListeners();
@@ -42,7 +42,7 @@ class Product with ChangeNotifier {
           body: jsonEncode(isFavorite),
         )
         .timeout(const Duration(seconds: 5));
-    print(response.statusCode);
+    // print(response.statusCode);
     if (response.statusCode >= 400) {
       undoFav(oldVal!);
       throw HttpException('Having problem connecting to the internet');

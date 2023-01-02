@@ -7,6 +7,7 @@ import '../providers/auth.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
 import '../screens/product_detail_screen.dart';
+import '../utils/app_color.dart';
 import '../utils/utils.dart';
 
 class ProductItem extends StatelessWidget {
@@ -54,10 +55,13 @@ class ProductItem extends StatelessWidget {
             },
             color: Theme.of(context).colorScheme.secondary,
           ),
-          backgroundColor: Colors.black87,
+          backgroundColor: AppColor.kDarkBrownColor,
           title: Text(
             product.title,
             textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Color(0xFFE1E6E1),
+            ),
           ),
           trailing: IconButton(
             icon: const Icon(Icons.shopping_cart),

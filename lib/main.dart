@@ -14,6 +14,7 @@ import './providers/products.dart';
 import './providers/cart.dart';
 import './providers/auth.dart';
 import './helpers/custom_route.dart';
+import './utils/app_color.dart';
 
 void main() {
   runApp(const MyApp());
@@ -47,10 +48,12 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             fontFamily: 'Lato',
-            primaryColor: Colors.purple,
-            colorScheme:
-                ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(
-              secondary: Colors.deepOrange,
+            scaffoldBackgroundColor: AppColor.bg,
+            canvasColor: AppColor.bg,
+            primaryColor: AppColor.primaryColor,
+            colorScheme: ColorScheme.fromSwatch().copyWith(
+              primary: AppColor.primaryColor,
+              secondary: AppColor.accentColor,
             ),
             pageTransitionsTheme: PageTransitionsTheme(
               builders: {

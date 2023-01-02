@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../models/http_exception.dart';
 import '../providers/auth.dart';
+import '../utils/app_color.dart';
 import '../utils/utils.dart';
 
 enum AuthMode { signup, login }
@@ -28,8 +29,10 @@ class AuthScreen extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color.fromRGBO(215, 117, 255, 1).withOpacity(0.5),
-                  const Color.fromRGBO(255, 188, 117, 1).withOpacity(0.9),
+                  AppColor.accentColor.withOpacity(0.5),
+                  AppColor.kBlueColor.withOpacity(0.9),
+                  // const Color.fromRGBO(215, 117, 255, 1).withOpacity(0.5),
+                  // const Color.fromRGBO(255, 188, 117, 1).withOpacity(0.9),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -55,7 +58,7 @@ class AuthScreen extends StatelessWidget {
                       // ..translate(-10.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: Colors.deepOrange.shade900,
+                        color: AppColor.kDarkBrownColor,
                         boxShadow: const [
                           BoxShadow(
                             blurRadius: 8,
@@ -111,7 +114,7 @@ class _AuthCardState extends State<AuthCard>
   final _passwordController = TextEditingController();
   late AnimationController _controller;
   // late Animation<Size> _heightAnimation;
-  late Animation<Offset> __slideAnimation;
+  // late Animation<Offset> __slideAnimation;
   late Animation<double> _opacityAnimation;
 
   @override
@@ -130,15 +133,15 @@ class _AuthCardState extends State<AuthCard>
     //     curve: Curves.linear,
     //   ),
     // );
-    __slideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, -1.5),
-      end: const Offset(0.0, 0.0),
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeIn,
-      ),
-    );
+    // __slideAnimation = Tween<Offset>(
+    //   begin: const Offset(0.0, -1.5),
+    //   end: const Offset(0.0, 0.0),
+    // ).animate(
+    //   CurvedAnimation(
+    //     parent: _controller,
+    //     curve: Curves.easeIn,
+    //   ),
+    // );
     _opacityAnimation = Tween<double>(
       begin: 0.0,
       end: 10.0,
@@ -242,6 +245,7 @@ class _AuthCardState extends State<AuthCard>
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     return Card(
+      color: AppColor.bg,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -310,23 +314,23 @@ class _AuthCardState extends State<AuthCard>
                     opacity: _opacityAnimation,
                     // child: SlideTransition(
                     //   position: __slideAnimation,
-                      child: TextFormField(
-                        enabled: _authMode == AuthMode.signup,
-                        decoration:
-                            const InputDecoration(labelText: 'Confirm Password'),
-                        obscureText: true,
-                        validator: _authMode == AuthMode.signup
-                            ? (value) {
-                                if (value != _passwordController.text) {
-                                  return 'Passwords do not match!';
-                                }
-                                return null;
+                    child: TextFormField(
+                      enabled: _authMode == AuthMode.signup,
+                      decoration:
+                          const InputDecoration(labelText: 'Confirm Password'),
+                      obscureText: true,
+                      validator: _authMode == AuthMode.signup
+                          ? (value) {
+                              if (value != _passwordController.text) {
+                                return 'Passwords do not match!';
                               }
-                            : null,
-                      ),
+                              return null;
+                            }
+                          : null,
                     ),
                   ),
-                // ), // SlideTransition 
+                ),
+                // ), // SlideTransition
                 const SizedBox(
                   height: 20,
                 ),
