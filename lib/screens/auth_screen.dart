@@ -348,7 +348,7 @@ class _AuthCardState extends State<AuthCard>
                             horizontal: 30.0, vertical: 8.0),
                         textStyle: TextStyle(
                           color:
-                              Theme.of(context).primaryTextTheme.button!.color,
+                              Theme.of(context).primaryTextTheme.labelLarge!.color,
                         )),
                     child:
                         Text(_authMode == AuthMode.login ? 'LOGIN' : 'SIGN UP'),
