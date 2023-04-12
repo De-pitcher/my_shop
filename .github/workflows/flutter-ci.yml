@@ -1,0 +1,40 @@
+name: Flutter CI
+
+on:
+  push:
+    branches:
+    - develop-ci
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: "12.x" 
+        cahce: 'gradle'   
+    
+    - uses: subosito/flutter-action@v2.4.0
+      with:
+        channel: 'stable'
+        flutter-version: '3.0.0'
+        cache: true
+    - run: flutter pub get
+    - run: flutter build apk
+
+    - name: Upload to artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: test-app-profile
+        path: build/app/outputs/flutter-apk/app-release.apk
+    - name: Upload to gdrive
+      uses: adityak74/google-drive-upload-git-action@main
+      with:
+        credentials: ${{ secrets.GDRIVE_SECRET }}
+        filename: "build/app/outputs/flutter-apk/app-release.apk"
+        folderId: ${{ secrets.GD_CICD_FOLDER_ID }}
+        name: "CICD-TESTING-profile.apk" # Name of file in drive. Needs to be same as temporary file.
+        overwrite: "true" # This will overwrite temporary file
+        mimetype: application/vnd.android.package-archive
