@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:my_shop/utils/email_validator.dart';
 import 'package:provider/provider.dart';
 
 import '../models/http_exception.dart';
@@ -113,8 +114,6 @@ class _AuthCardState extends State<AuthCard>
   var _isLoading = false;
   final _passwordController = TextEditingController();
   late AnimationController _controller;
-  // late Animation<Size> _heightAnimation;
-  // late Animation<Offset> __slideAnimation;
   late Animation<double> _opacityAnimation;
 
   @override
@@ -124,24 +123,6 @@ class _AuthCardState extends State<AuthCard>
       vsync: this,
       duration: const Duration(milliseconds: 360),
     );
-    // _heightAnimation = Tween<Size>(
-    //   begin: const Size(double.infinity, 260),
-    //   end: const Size(double.infinity, 320),
-    // ).animate(
-    //   CurvedAnimation(
-    //     parent: _controller,
-    //     curve: Curves.linear,
-    //   ),
-    // );
-    // __slideAnimation = Tween<Offset>(
-    //   begin: const Offset(0.0, -1.5),
-    //   end: const Offset(0.0, 0.0),
-    // ).animate(
-    //   CurvedAnimation(
-    //     parent: _controller,
-    //     curve: Curves.easeIn,
-    //   ),
-    // );
     _opacityAnimation = Tween<double>(
       begin: 0.0,
       end: 10.0,
@@ -151,7 +132,6 @@ class _AuthCardState extends State<AuthCard>
         curve: Curves.bounceIn,
       ),
     );
-    // _heightAnimation.addListener(() => setState(() {}));
   }
 
   @override
@@ -169,62 +149,44 @@ class _AuthCardState extends State<AuthCard>
     );
   }
 
+  void _toggleIsLoadingTo(bool value) {
+    setState(() {
+      _isLoading = value;
+    });
+  }
+
   void _submit() async {
     if (!_formKey.currentState!.validate()) {
       // Invalid!
       return;
     }
     _formKey.currentState!.save();
-    setState(() {
-      _isLoading = true;
-    });
+    _toggleIsLoadingTo(true);
     if (_authMode == AuthMode.login) {
       // Log user in
-      try {
-        await Provider.of<Auth>(context, listen: false).login(
-          _authData['email']!,
-          _authData['password']!,
-        );
-      } on HttpException catch (error) {
-        // print(error);
-        var errorMessage = HttpException.errorMessageFromAuthException(
-          error.message,
-          'Authentication Failed!',
-        );
-        _showdDialog(errorMessage);
-      } on SocketException catch (_) {
-        const errorMessage = 'No internet!';
-        _showdDialog(errorMessage);
-      } catch (error) {
-        // print(error);
-        const errorMessage =
-            'Could not authenticate you. Please try again later!';
-        _showdDialog(errorMessage);
-      }
+      await Provider.of<Auth>(context, listen: false)
+          .login(
+            _authData['email']!,
+            _authData['password']!,
+          )
+          .then((value) => _toggleIsLoadingTo(false))
+          .onError((error, stackTrace) => {
+                _toggleIsLoadingTo(false),
+                _showdDialog(error.toString()),
+              });
     } else {
       // Sign user up
-      try {
-        await Provider.of<Auth>(context, listen: false).signUp(
-          _authData['email']!,
-          _authData['password']!,
-        );
-      } on HttpException catch (error) {
-        // print(error);
-        var errorMessage = HttpException.errorMessageFromAuthException(
-          error.message,
-          'Authentication Failed!',
-        );
-        _showdDialog(errorMessage);
-      } catch (error) {
-        // print(error);
-        const errorMessage =
-            'Could not authenticate you. Please try again later!';
-        _showdDialog(errorMessage);
-      }
+      await Provider.of<Auth>(context, listen: false)
+          .signUp(
+            _authData['email']!,
+            _authData['password']!,
+          )
+          .then((value) => _toggleIsLoadingTo(false))
+          .onError((error, stackTrace) => {
+                _toggleIsLoadingTo(false),
+                _showdDialog(error.toString()),
+              });
     }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   void _switchAuthMode() {
@@ -250,24 +212,15 @@ class _AuthCardState extends State<AuthCard>
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 8.0,
-      child:
-          // AnimatedBuilder(
-          //   animation: _heightAnimation,
-          //   builder: (ctx, ch) =>
-          AnimatedContainer(
+      child: AnimatedContainer(
         duration: const Duration(milliseconds: 360),
         curve: Curves.slowMiddle,
         height: _authMode == AuthMode.signup ? 320 : 260,
-        // height: _heightAnimation.value.height,
-        constraints:
-            BoxConstraints(minHeight: _authMode == AuthMode.signup ? 320 : 260
-                // minHeight: _heightAnimation.value.height,
-                ),
-
+        constraints: BoxConstraints(
+          minHeight: _authMode == AuthMode.signup ? 320 : 260,
+        ),
         width: deviceSize.width * 0.75,
         padding: const EdgeInsets.all(16.0),
-        //   child: ch,
-        // ),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -276,13 +229,8 @@ class _AuthCardState extends State<AuthCard>
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'E-Mail'),
                   keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value != null &&
-                        (value.isEmpty || !value.contains('@'))) {
-                      return 'Invalid email!';
-                    }
-                    return null;
-                  },
+                  validator: (value) =>
+                      value!.isValidEmail() ? null : 'Invalid email!',
                   onSaved: (value) {
                     _authData['email'] = value!;
                   },
@@ -291,18 +239,14 @@ class _AuthCardState extends State<AuthCard>
                   decoration: const InputDecoration(labelText: 'Password'),
                   obscureText: true,
                   controller: _passwordController,
-                  validator: (value) {
-                    if (value != null && (value.isEmpty || value.length < 5)) {
-                      return 'Password is too short!';
-                    }
-                    return null;
-                  },
+                  validator: (value) =>
+                      value != null && (value.isEmpty || value.length < 5)
+                          ? 'Password is too short!'
+                          : null,
                   onSaved: (value) {
                     _authData['password'] = value!;
                   },
                 ),
-                // if (_authMode == AuthMode.signup)
-
                 AnimatedContainer(
                   constraints: BoxConstraints(
                     minHeight: _authMode == AuthMode.signup ? 60 : 0,
@@ -312,8 +256,6 @@ class _AuthCardState extends State<AuthCard>
                   curve: Curves.easeIn,
                   child: FadeTransition(
                     opacity: _opacityAnimation,
-                    // child: SlideTransition(
-                    //   position: __slideAnimation,
                     child: TextFormField(
                       enabled: _authMode == AuthMode.signup,
                       decoration:
@@ -330,7 +272,6 @@ class _AuthCardState extends State<AuthCard>
                     ),
                   ),
                 ),
-                // ), // SlideTransition
                 const SizedBox(
                   height: 20,
                 ),
@@ -340,18 +281,22 @@ class _AuthCardState extends State<AuthCard>
                   ElevatedButton(
                     onPressed: _submit,
                     style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        backgroundColor: Theme.of(context).primaryColor,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30.0, vertical: 8.0),
-                        textStyle: TextStyle(
-                          color:
-                              Theme.of(context).primaryTextTheme.labelLarge!.color,
-                        )),
-                    child:
-                        Text(_authMode == AuthMode.login ? 'LOGIN' : 'SIGN UP'),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      backgroundColor: Theme.of(context).primaryColor,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30.0, vertical: 8.0),
+                      textStyle: TextStyle(
+                        color: Theme.of(context)
+                            .primaryTextTheme
+                            .labelLarge!
+                            .color,
+                      ),
+                    ),
+                    child: Text(
+                      _authMode == AuthMode.login ? 'LOGIN' : 'SIGN UP',
+                    ),
                   ),
                 TextButton(
                   onPressed: _switchAuthMode,
@@ -366,7 +311,8 @@ class _AuthCardState extends State<AuthCard>
                     ),
                   ),
                   child: Text(
-                      '${_authMode == AuthMode.login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
+                    '${_authMode == AuthMode.login ? 'SIGNUP' : 'LOGIN'} INSTEAD',
+                  ),
                 ),
               ],
             ),

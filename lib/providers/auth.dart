@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -64,8 +65,16 @@ class Auth with ChangeNotifier {
         },
       );
       prefs.setString('userData', userData);
-      // print(_token);
-      // print(_userId);
+    } on SocketException catch (e) {
+      throw HttpException.errorMessageFromAuthException(
+        e.message,
+        'No Internet!',
+      );
+    } on HttpException catch (error) {
+      throw HttpException.errorMessageFromAuthException(
+        error.message,
+        'Authentication Failed!',
+      );
     } catch (error) {
       rethrow;
     }
