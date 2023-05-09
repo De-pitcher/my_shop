@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/orders.dart' show Orders;
 import '../widgets/app_drawer.dart';
+import '../widgets/loading_widget.dart';
 import '../widgets/order_item.dart';
 
 class OrdersScreen extends StatelessWidget {
@@ -21,7 +22,7 @@ class OrdersScreen extends StatelessWidget {
         future: Provider.of<Orders>(context, listen: false).fetchOrders(),
         builder: (ctx, snapshotData) {
           if (snapshotData.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const LoadingWidget();
           } else if (snapshotData.hasError) {
             return const Center(child: Text('Something went wrong!'));
           }

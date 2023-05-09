@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../utils/app_color.dart';
 import '../widgets/app_drawer.dart';
+import '../widgets/loading_widget.dart';
 import './cart_screen.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/badge.dart' as my_wid;
@@ -84,9 +85,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
       ),
       drawer: const AppDrawer(),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
+          ? const LoadingWidget()
           : ProductsGrid(_showFavoriteItems),
     );
   }
