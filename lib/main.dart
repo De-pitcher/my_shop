@@ -52,8 +52,8 @@ class MyApp extends StatelessWidget {
             canvasColor: AppColor.bg,
             primaryColor: AppColor.primaryColor,
             colorScheme: ColorScheme.fromSwatch().copyWith(
-              primary: AppColor.primaryColor,
-              secondary: AppColor.accentColor,
+              secondary: AppColor.primaryColor,
+              primary: AppColor.accentColor,
             ),
             pageTransitionsTheme: PageTransitionsTheme(
               builders: {

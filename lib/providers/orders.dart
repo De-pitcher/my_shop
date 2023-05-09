@@ -38,7 +38,7 @@ class Orders with ChangeNotifier {
           id: ordId,
           amount: ordProd['amount'],
           products: (ordProd['products'] as List<dynamic>)
-              .map((items) => CartItem.fromMap(items))
+              .map((items) => CartItem.fromJson(items))
               .toList(),
           dateTime: DateTime.parse(ordProd['dateTime']),
         ),
@@ -55,7 +55,7 @@ class Orders with ChangeNotifier {
           body: jsonEncode({
             'amount': total,
             'dateTime': timeStamp.toIso8601String(),
-            'products': cartProducts.map((cp) => cp.toMap()).toList()
+            'products': cartProducts.map((cp) => cp.toJson()).toList()
           }));
 
       _orders.insert(

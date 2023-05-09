@@ -56,7 +56,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             pinned: true,
             floating: true,
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(loadedProduct.title),
+              title: Text(
+                loadedProduct.title,
+                style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: !_isAppBarExpanded
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.white,
+                    ),
+              ),
               background: Hero(
                 tag: loadedProduct.id!,
                 child: Image.network(

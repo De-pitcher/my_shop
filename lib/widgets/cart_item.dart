@@ -3,6 +3,7 @@ import 'package:my_shop/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/cart.dart';
+import '../utils/app_color.dart';
 
 class CartItem extends StatelessWidget {
   final String id;
@@ -11,13 +12,13 @@ class CartItem extends StatelessWidget {
   final double price;
   final int quantity;
 
-  const CartItem(
-    this.id,
-    this.productId,
-    this.title,
-    this.price,
-    this.quantity, {
+  const CartItem({
     super.key,
+    required this.id,
+    required this.productId,
+    required this.title,
+    required this.price,
+    required this.quantity,
   });
 
   @override
@@ -59,6 +60,7 @@ class CartItem extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           child: ListTile(
             leading: CircleAvatar(
+              backgroundColor: AppColor.kDarkBrownColor,
               child: Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: FittedBox(child: Text('\$$price')),

@@ -25,6 +25,7 @@ class ProductItem extends StatelessWidget {
           leading: IconButton(
             icon: Icon(
               product.isFavorite! ? Icons.favorite : Icons.favorite_border,
+              color: Theme.of(context).colorScheme.primary,
             ),
             onPressed: () async {
               final oldVal = product.isFavorite;
@@ -55,6 +56,7 @@ class ProductItem extends StatelessWidget {
           ),
           trailing: IconButton(
             icon: const Icon(Icons.shopping_cart),
+            color: Theme.of(context).colorScheme.primary,
             onPressed: () {
               cart.addItem(product.id!, product.title, product.price);
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -67,7 +69,6 @@ class ProductItem extends StatelessWidget {
                     }),
               );
             },
-            color: Theme.of(context).colorScheme.secondary,
           ),
         ),
         child: GestureDetector(
