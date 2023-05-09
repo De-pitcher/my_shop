@@ -22,7 +22,7 @@ CartItem _$CartItemFromJson(Map<String, dynamic> json) {
 mixin _$CartItem {
   String get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
-  String? get image => throw _privateConstructorUsedError;
+  String? get imageUrl => throw _privateConstructorUsedError;
   int get quantity => throw _privateConstructorUsedError;
   double get price => throw _privateConstructorUsedError;
 
@@ -38,7 +38,7 @@ abstract class $CartItemCopyWith<$Res> {
       _$CartItemCopyWithImpl<$Res, CartItem>;
   @useResult
   $Res call(
-      {String id, String title, String? image, int quantity, double price});
+      {String id, String title, String? imageUrl, int quantity, double price});
 }
 
 /// @nodoc
@@ -56,7 +56,7 @@ class _$CartItemCopyWithImpl<$Res, $Val extends CartItem>
   $Res call({
     Object? id = null,
     Object? title = null,
-    Object? image = freezed,
+    Object? imageUrl = freezed,
     Object? quantity = null,
     Object? price = null,
   }) {
@@ -69,9 +69,9 @@ class _$CartItemCopyWithImpl<$Res, $Val extends CartItem>
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
-      image: freezed == image
-          ? _value.image
-          : image // ignore: cast_nullable_to_non_nullable
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
       quantity: null == quantity
           ? _value.quantity
@@ -93,7 +93,7 @@ abstract class _$$_CartItemCopyWith<$Res> implements $CartItemCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String id, String title, String? image, int quantity, double price});
+      {String id, String title, String? imageUrl, int quantity, double price});
 }
 
 /// @nodoc
@@ -109,7 +109,7 @@ class __$$_CartItemCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? title = null,
-    Object? image = freezed,
+    Object? imageUrl = freezed,
     Object? quantity = null,
     Object? price = null,
   }) {
@@ -122,9 +122,9 @@ class __$$_CartItemCopyWithImpl<$Res>
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
-      image: freezed == image
-          ? _value.image
-          : image // ignore: cast_nullable_to_non_nullable
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
       quantity: null == quantity
           ? _value.quantity
@@ -144,7 +144,7 @@ class _$_CartItem with DiagnosticableTreeMixin implements _CartItem {
   const _$_CartItem(
       {required this.id,
       required this.title,
-      this.image,
+      this.imageUrl,
       required this.quantity,
       required this.price});
 
@@ -156,7 +156,7 @@ class _$_CartItem with DiagnosticableTreeMixin implements _CartItem {
   @override
   final String title;
   @override
-  final String? image;
+  final String? imageUrl;
   @override
   final int quantity;
   @override
@@ -164,7 +164,7 @@ class _$_CartItem with DiagnosticableTreeMixin implements _CartItem {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'CartItem(id: $id, title: $title, image: $image, quantity: $quantity, price: $price)';
+    return 'CartItem(id: $id, title: $title, imageUrl: $imageUrl, quantity: $quantity, price: $price)';
   }
 
   @override
@@ -174,7 +174,7 @@ class _$_CartItem with DiagnosticableTreeMixin implements _CartItem {
       ..add(DiagnosticsProperty('type', 'CartItem'))
       ..add(DiagnosticsProperty('id', id))
       ..add(DiagnosticsProperty('title', title))
-      ..add(DiagnosticsProperty('image', image))
+      ..add(DiagnosticsProperty('imageUrl', imageUrl))
       ..add(DiagnosticsProperty('quantity', quantity))
       ..add(DiagnosticsProperty('price', price));
   }
@@ -186,7 +186,8 @@ class _$_CartItem with DiagnosticableTreeMixin implements _CartItem {
             other is _$_CartItem &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
-            (identical(other.image, image) || other.image == image) &&
+            (identical(other.imageUrl, imageUrl) ||
+                other.imageUrl == imageUrl) &&
             (identical(other.quantity, quantity) ||
                 other.quantity == quantity) &&
             (identical(other.price, price) || other.price == price));
@@ -195,7 +196,7 @@ class _$_CartItem with DiagnosticableTreeMixin implements _CartItem {
   @JsonKey(ignore: true)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, title, image, quantity, price);
+      Object.hash(runtimeType, id, title, imageUrl, quantity, price);
 
   @JsonKey(ignore: true)
   @override
@@ -215,7 +216,7 @@ abstract class _CartItem implements CartItem {
   const factory _CartItem(
       {required final String id,
       required final String title,
-      final String? image,
+      final String? imageUrl,
       required final int quantity,
       required final double price}) = _$_CartItem;
 
@@ -226,7 +227,7 @@ abstract class _CartItem implements CartItem {
   @override
   String get title;
   @override
-  String? get image;
+  String? get imageUrl;
   @override
   int get quantity;
   @override

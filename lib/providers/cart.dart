@@ -19,13 +19,19 @@ class Cart with ChangeNotifier {
     return amount;
   }
 
-  void addItem(String productId, String title, double price) {
+  void addItem({
+    required String productId,
+    required String title,
+    required double price,
+    String? imageUrl,
+  }) {
     if (_items.containsKey(productId)) {
       _items.update(
         productId,
         (existingProduct) => CartItem(
           id: existingProduct.id,
           title: existingProduct.title,
+          imageUrl: existingProduct.imageUrl,
           quantity: existingProduct.quantity + 1,
           price: existingProduct.price,
         ),
@@ -36,6 +42,7 @@ class Cart with ChangeNotifier {
         () => CartItem(
           id: DateTime.now().toString(),
           title: title,
+          imageUrl: imageUrl,
           quantity: 1,
           price: price,
         ),

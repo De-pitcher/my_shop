@@ -9,6 +9,7 @@ class CartItem extends StatelessWidget {
   final String id;
   final String productId;
   final String title;
+  final String? image;
   final double price;
   final int quantity;
 
@@ -17,6 +18,7 @@ class CartItem extends StatelessWidget {
     required this.id,
     required this.productId,
     required this.title,
+    this.image,
     required this.price,
     required this.quantity,
   });
@@ -60,11 +62,18 @@ class CartItem extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           child: ListTile(
             leading: CircleAvatar(
+              radius: 25,
               backgroundColor: AppColor.kDarkBrownColor,
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: FittedBox(child: Text('\$$price')),
-              ),
+              child: image != null
+                  ? ClipOval(
+                      child: Image.network(image!),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: FittedBox(
+                        child: Text('\$$price'),
+                      ),
+                    ),
             ),
             title: Text(title),
             subtitle: Text('Total: \$${price * quantity}'),
