@@ -8,10 +8,7 @@ import '../widgets/badge.dart' as my_wid;
 import '../providers/cart.dart';
 import '../providers/products.dart';
 
-enum FilterOption {
-  favorite,
-  all,
-}
+enum FilterOption { favorite, all }
 
 class ProductOverviewScreen extends StatefulWidget {
   const ProductOverviewScreen({super.key});

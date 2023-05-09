@@ -11,23 +11,13 @@ import '../utils/app_color.dart';
 import '../utils/utils.dart';
 
 class ProductItem extends StatelessWidget {
-  // final String id;
-  // final String title;
-  // final String imageUrl;
-  const ProductItem(
-      // this.id,
-      // this.title,
-      // this.imageUrl,
-      {
-    super.key,
-  });
+  const ProductItem({super.key});
 
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context);
     final cart = Provider.of<Cart>(context, listen: false);
     final authData = Provider.of<Auth>(context, listen: false);
-    // print('ProductItem rebuild build()');
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
@@ -94,10 +84,6 @@ class ProductItem extends StatelessWidget {
                   const AssetImage('assets/images/006 product-placeholder.png'),
               image: NetworkImage(product.imageUrl),
               fit: BoxFit.cover,
-              // child: Image.network(
-              //   product.imageUrl,
-              //   fit: BoxFit.cover,
-              // ),
             ),
           ),
         ),

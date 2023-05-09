@@ -3,9 +3,38 @@ import 'package:provider/provider.dart';
 
 import '../providers/products.dart';
 
-class ProductDetailScreen extends StatelessWidget {
+class ProductDetailScreen extends StatefulWidget
+    implements PreferredSizeWidget {
   static const routeName = '/product-detail';
   const ProductDetailScreen({super.key});
+
+  @override
+  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kTextTabBarHeight);
+}
+
+class _ProductDetailScreenState extends State<ProductDetailScreen>
+    with WidgetsBindingObserver {
+  bool _isAppBarExpanded = false;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.offset > 0 && !_isAppBarExpanded) {
+        setState(() {
+          _isAppBarExpanded = true;
+        });
+      } else if (_scrollController.offset <= 0 && _isAppBarExpanded) {
+        setState(() {
+          _isAppBarExpanded = false;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +45,16 @@ class ProductDetailScreen extends StatelessWidget {
       listen: false,
     ).findById(productId);
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(loadedProduct.title),
-      // ),
       body: CustomScrollView(
+        controller: _scrollController,
         slivers: [
           SliverAppBar(
             expandedHeight: 300,
+            foregroundColor: !_isAppBarExpanded
+                ? Theme.of(context).colorScheme.primary
+                : null,
             pinned: true,
+            floating: true,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(loadedProduct.title),
               background: Hero(
@@ -57,7 +88,11 @@ class ProductDetailScreen extends StatelessWidget {
                     softWrap: true,
                   ),
                 ),
-                const SizedBox(height: 800),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height -
+                      widget.preferredSize.height -
+                      (widget.preferredSize.shortestSide * 1.75),
+                ),
               ],
             ),
           ),
