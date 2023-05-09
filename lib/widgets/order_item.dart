@@ -20,7 +20,7 @@ class _OrderItemState extends State<OrderItem> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       height:
-          _expanded ? min(widget.order.products.length * 20 + 110, 200) : 95,
+          _expanded ? min(widget.order.products.length * 70 + 110, 270) : 95,
       child: Card(
         margin: const EdgeInsets.all(10),
         child: Column(
@@ -39,28 +39,44 @@ class _OrderItemState extends State<OrderItem> {
                 },
               ),
             ),
-            // if (_expanded)
             AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
               height: _expanded
-                  ? min(widget.order.products.length * 20 + 10, 100)
+                  ? min<double>(widget.order.products.length * 70 + 10, 170)
                   : 0,
               child: ListView(
                 children: widget.order.products.map(
                   (prod) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          prod.title,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                    return SizedBox(
+                      height: prod.imageUrl != null ? 72.5 : null,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              prod.imageUrl != null
+                                  ? ClipOval(
+                                      child: Image.network(
+                                        prod.imageUrl!,
+                                        height: 50,
+                                        width: 50,
+                                      ),
+                                    )
+                                  : Container(),
+                              Text(
+                                prod.title,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        Text('\$${prod.quantity}x \$${prod.price}'),
-                      ],
+                          Text('\$${prod.price}  x(${prod.quantity})'),
+                        ],
+                      ),
                     );
                   },
                 ).toList(),
