@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/product.dart';
 import '../providers/products.dart';
 import '../utils/utils.dart';
+import '../widgets/picker.dart';
 
 const title = 'title';
 const price = 'price';
@@ -215,14 +216,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Container(
-                          width: 100,
-                          height: 100,
+                          width: 200,
+                          height: 200,
                           margin: const EdgeInsets.only(top: 8, right: 8),
                           decoration: BoxDecoration(
                             border: Border.all(width: 1, color: Colors.grey),
                           ),
                           child: _imageUrlController.text.isEmpty
-                              ? const Text('Enter a URL')
+                              ? const Center(child: Text('Image Preview'))
                               : FittedBox(
                                   child: Image.network(
                                     _imageUrlController.text,
@@ -230,35 +231,40 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                   ),
                                 ),
                         ),
-                        Expanded(
-                          child: TextFormField(
-                            controller: _imageUrlController,
-                            decoration:
-                                const InputDecoration(labelText: 'Input URL'),
-                            keyboardType: TextInputType.url,
-                            textInputAction: TextInputAction.done,
-                            focusNode: _imageUrlFocusNode,
-                            onFieldSubmitted: (_) => _saveForm(),
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Please enter an image URL';
-                              } else if (!value.startsWith('http') ||
-                                  !value.startsWith('https')) {
-                                return 'Please enter a valid URL';
-                              }
-                              //  else if (!value.endsWith('.png') ||
-                              //     !value.endsWith('.jpg') ||
-                              //     !value.endsWith('jpeg')) {
-                              //   return 'Please enter a valid URL';
-                              // }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _editedProduct =
-                                  _editedProduct.copyWith(imageUrl: value);
-                            },
-                          ),
+
+                        Picker(
+                          color: Colors.white,
+                          imagePickFn: (_) {},
                         ),
+                        // Expanded(
+                        //   child: TextFormField(
+                        //     controller: _imageUrlController,
+                        //     decoration:
+                        //         const InputDecoration(labelText: 'Input URL'),
+                        //     keyboardType: TextInputType.url,
+                        //     textInputAction: TextInputAction.done,
+                        //     focusNode: _imageUrlFocusNode,
+                        //     onFieldSubmitted: (_) => _saveForm(),
+                        //     validator: (value) {
+                        //       if (value == null) {
+                        //         return 'Please enter an image URL';
+                        //       } else if (!value.startsWith('http') ||
+                        //           !value.startsWith('https')) {
+                        //         return 'Please enter a valid URL';
+                        //       }
+                        //       //  else if (!value.endsWith('.png') ||
+                        //       //     !value.endsWith('.jpg') ||
+                        //       //     !value.endsWith('jpeg')) {
+                        //       //   return 'Please enter a valid URL';
+                        //       // }
+                        //       return null;
+                        //     },
+                        //     onSaved: (value) {
+                        //       _editedProduct =
+                        //           _editedProduct.copyWith(imageUrl: value);
+                        //     },
+                        //   ),
+                        // ),
                       ],
                     )
                   ],
