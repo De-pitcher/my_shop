@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,8 +33,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
     description: '',
     price: '',
   };
+  String? _fileImage;
   var _isInit = false;
   var _isLoading = false;
+  var _isText = true;
 
   @override
   void initState() {
@@ -212,61 +216,39 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             _editedProduct.copyWith(description: value);
                       },
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                   
+                    Picker(
+                      color: Colors.white,
+                      isText: _isText,
+                      controller: _imageUrlController,
+                      focusNode: _imageUrlFocusNode,
+                      onFieldSubmitted: (_) => _saveForm(),
+                      imagePickFn: (value) {
+                        setState(() {
+                          _fileImage = value;
+                        });
+                      },
+                      onSaved: (value) {
+                        _editedProduct =
+                            _editedProduct.copyWith(imageUrl: value);
+                      },
+                    ),
+                    Column(
                       children: [
-                        Container(
-                          width: 200,
-                          height: 200,
-                          margin: const EdgeInsets.only(top: 8, right: 8),
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 1, color: Colors.grey),
-                          ),
-                          child: _imageUrlController.text.isEmpty
-                              ? const Center(child: Text('Image Preview'))
-                              : FittedBox(
-                                  child: Image.network(
-                                    _imageUrlController.text,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                        Switch(
+                            value: _isText,
+                            onChanged: (val) {
+                              setState(() {
+                                _isText = val;
+                                _fileImage = null;
+                              });
+                            }),
+                        const Text(
+                          'Enter imageUrl',
+                          style: TextStyle(color: Colors.black),
                         ),
-
-                        Picker(
-                          color: Colors.white,
-                          imagePickFn: (_) {},
-                        ),
-                        // Expanded(
-                        //   child: TextFormField(
-                        //     controller: _imageUrlController,
-                        //     decoration:
-                        //         const InputDecoration(labelText: 'Input URL'),
-                        //     keyboardType: TextInputType.url,
-                        //     textInputAction: TextInputAction.done,
-                        //     focusNode: _imageUrlFocusNode,
-                        //     onFieldSubmitted: (_) => _saveForm(),
-                        //     validator: (value) {
-                        //       if (value == null) {
-                        //         return 'Please enter an image URL';
-                        //       } else if (!value.startsWith('http') ||
-                        //           !value.startsWith('https')) {
-                        //         return 'Please enter a valid URL';
-                        //       }
-                        //       //  else if (!value.endsWith('.png') ||
-                        //       //     !value.endsWith('.jpg') ||
-                        //       //     !value.endsWith('jpeg')) {
-                        //       //   return 'Please enter a valid URL';
-                        //       // }
-                        //       return null;
-                        //     },
-                        //     onSaved: (value) {
-                        //       _editedProduct =
-                        //           _editedProduct.copyWith(imageUrl: value);
-                        //     },
-                        //   ),
-                        // ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
