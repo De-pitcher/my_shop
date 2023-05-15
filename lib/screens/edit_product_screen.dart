@@ -222,7 +222,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       isText: _isText,
                       controller: _imageUrlController,
                       focusNode: _imageUrlFocusNode,
-                      onFieldSubmitted: (_) => _saveForm(),
+                      // onFieldSubmitted: (_) => _saveForm(),
                       imagePickFn: (value) {
                         setState(() {
                           _fileImage = value;

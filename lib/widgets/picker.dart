@@ -1,10 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:my_shop/helpers/url_extension.dart';
 
 class Picker extends StatefulWidget {
   final Color color;
@@ -68,62 +68,29 @@ class _PickerState extends State<Picker> {
     });
   }
 
-  Future<void> _selectFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    if (result == null) return;
-    setState(() {
-      widget.imagePickFn(result.files.single.path!);
-    });
-  }
-
   Future<void> _selectNetworkImage(String? imageUrl) async {
     if (imageUrl == null) return;
-    canLaunchUrl(Uri.parse(imageUrl)).then((willLaunch) {
-      if (willLaunch) {
+    // final url = Uri.parse(imageUrl);
+    try {
+      final response = await Dio().get(imageUrl);
+      if (response.statusCode == 200) {
         setState(() {
           _fileImage = imageUrl;
         });
       } else {
-        log('Cannot luanch!!');
         setState(() {
-          _fileImage = imageUrl;
+          _fileImage = null;
         });
       }
-    }).onError((error, stackTrace) {
+    } catch (error) {
+      setState(() {
+        _fileImage = null;
+      });
+      log(error.toString());
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Failed to launch URL'),
       ));
-    });
-    // await UrlLauncherPlatform.instance.canLaunch(imageUrl).then((canLaunch) {
-    //   if (canLaunch) {
-    //     setState(() {
-    //       widget.imagePickFn(imageUrl);
-    //     });
-    //   } else {
-    //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-    //       content: Text('Failed to launch URL'),
-    //     ));
-    //   }
-    // });
-  }
-
-  Future<void> _pickImage() async {
-    await showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Select Image Source'),
-        actions: [
-          TextButton(
-            onPressed: _selectImage,
-            child: const Text('Gallery/Camera'),
-          ),
-          TextButton(
-            onPressed: _selectFile,
-            child: const Text('File System'),
-          ),
-        ],
-      ),
-    );
+    }
   }
 
   @override
@@ -168,26 +135,13 @@ class _PickerState extends State<Picker> {
                 textInputAction: TextInputAction.done,
                 focusNode: widget.focusNode,
                 // onFieldSubmitted: widget.onFieldSubmitted,
-                onFieldSubmitted: _selectNetworkImage,
+                onFieldSubmitted: (value) => _selectNetworkImage(value),
                 style: const TextStyle(color: Colors.black),
-                onChanged: _selectNetworkImage,
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please enter an image URL';
-                  } else if (!value.startsWith('http') ||
-                      !value.startsWith('https')) {
-                    return 'Please enter a valid URL';
-                  }
-                  // else if (!value.endsWith('.png') ||
-                  //     !value.endsWith('.jpg') ||
-                  //     !value.endsWith('jpeg')) {
-                  //   return 'Please enter a valid URL';
-                  // }
-                  return null;
-                },
+                // onChanged: (value) => _selectNetworkImage(value),
+                validator: (value) =>
+                    value!.isValidUrl() ? null : 'Not a valid url',
                 onSaved: (val) {
-                  _selectNetworkImage(val);
-                  // widget.onSaved;
+                  widget.onSaved;
                 }),
           ),
           crossFadeState: widget.isText
