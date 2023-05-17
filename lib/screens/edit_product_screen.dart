@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +31,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
     description: '',
     price: '',
   };
-  String? _fileImage;
   var _isInit = false;
   var _isLoading = false;
   var _isText = true;
@@ -216,21 +213,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             _editedProduct.copyWith(description: value);
                       },
                     ),
-                   
                     Picker(
                       color: Colors.white,
                       isText: _isText,
                       controller: _imageUrlController,
                       focusNode: _imageUrlFocusNode,
-                      // onFieldSubmitted: (_) => _saveForm(),
-                      imagePickFn: (value) {
-                        setState(() {
-                          _fileImage = value;
-                        });
-                      },
                       onSaved: (value) {
-                        _editedProduct =
-                            _editedProduct.copyWith(imageUrl: value);
+                        if (value!.isNotEmpty) {
+                          _editedProduct =
+                              _editedProduct.copyWith(imageUrl: value);
+                        }
                       },
                     ),
                     Column(
@@ -240,7 +232,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             onChanged: (val) {
                               setState(() {
                                 _isText = val;
-                                _fileImage = null;
                               });
                             }),
                         const Text(

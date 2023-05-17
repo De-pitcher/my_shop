@@ -11,20 +11,18 @@ class Picker extends StatefulWidget {
   final bool isText;
   final TextEditingController? controller;
   final FocusNode? focusNode;
-  final Function(String)? onFieldSubmitted;
   final Function(String?)? onSaved;
-  final Function(String) imagePickFn;
+  final Function(String)? imagePickFn;
 
   /// [Picker] is a widget that accesses the phone camera and parses
   /// the retrieved file as [FileImage]
   const Picker({
     super.key,
     required this.color,
-    required this.imagePickFn,
     required this.isText,
+    this.imagePickFn,
     this.controller,
     this.focusNode,
-    this.onFieldSubmitted,
     this.onSaved,
   });
 
@@ -64,13 +62,12 @@ class _PickerState extends State<Picker> {
 
     if (pickedImageFile == null) return;
     setState(() {
-      widget.imagePickFn(pickedImageFile.path);
+      // widget.imagePickFn(pickedImageFile.path);
     });
   }
 
   Future<void> _selectNetworkImage(String? imageUrl) async {
     if (imageUrl == null) return;
-    // final url = Uri.parse(imageUrl);
     try {
       final response = await Dio().get(imageUrl);
       if (response.statusCode == 200) {
@@ -129,20 +126,17 @@ class _PickerState extends State<Picker> {
           secondChild: SizedBox(
             height: 60,
             child: TextFormField(
-                controller: widget.controller,
-                decoration: const InputDecoration(labelText: 'Input URL'),
-                keyboardType: TextInputType.url,
-                textInputAction: TextInputAction.done,
-                focusNode: widget.focusNode,
-                // onFieldSubmitted: widget.onFieldSubmitted,
-                onFieldSubmitted: (value) => _selectNetworkImage(value),
-                style: const TextStyle(color: Colors.black),
-                // onChanged: (value) => _selectNetworkImage(value),
-                validator: (value) =>
-                    value!.isValidUrl() ? null : 'Not a valid url',
-                onSaved: (val) {
-                  widget.onSaved;
-                }),
+              controller: widget.controller,
+              decoration: const InputDecoration(labelText: 'Input URL'),
+              keyboardType: TextInputType.url,
+              textInputAction: TextInputAction.done,
+              focusNode: widget.focusNode,
+              onFieldSubmitted: (value) => _selectNetworkImage(value),
+              style: const TextStyle(color: Colors.black),
+              validator: (value) =>
+                  value!.isValidUrl() ? null : 'Not a valid url',
+              onSaved: widget.onSaved,
+            ),
           ),
           crossFadeState: widget.isText
               ? CrossFadeState.showFirst
