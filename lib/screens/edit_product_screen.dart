@@ -33,7 +33,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   };
   var _isInit = false;
   var _isLoading = false;
-  var _isText = true;
 
   @override
   void initState() {
@@ -215,7 +214,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                     Picker(
                       color: Colors.white,
-                      isText: _isText,
                       controller: _imageUrlController,
                       focusNode: _imageUrlFocusNode,
                       onSaved: (value) {
@@ -225,21 +223,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         }
                       },
                     ),
-                    Column(
-                      children: [
-                        Switch(
-                            value: _isText,
-                            onChanged: (val) {
-                              setState(() {
-                                _isText = val;
-                              });
-                            }),
-                        const Text(
-                          'Enter imageUrl',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ],
-                    ),
+             
                   ],
                 ),
               ),

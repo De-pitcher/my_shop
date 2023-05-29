@@ -22,7 +22,7 @@ class Orders with ChangeNotifier {
     userId = auth.userId;
   }
 
-  List<OrderItem> get orders => [..._orders];
+  List<OrderItem> get orders => _orders;
 
   Future<void> fetchOrders() async {
     final response = await http

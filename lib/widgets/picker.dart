@@ -4,11 +4,9 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:my_shop/helpers/url_extension.dart';
 
 class Picker extends StatefulWidget {
   final Color color;
-  final bool isText;
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final Function(String?)? onSaved;
@@ -19,7 +17,6 @@ class Picker extends StatefulWidget {
   const Picker({
     super.key,
     required this.color,
-    required this.isText,
     this.imagePickFn,
     this.controller,
     this.focusNode,
@@ -32,37 +29,40 @@ class Picker extends StatefulWidget {
 
 class _PickerState extends State<Picker> {
   String? _fileImage;
+  bool _isText = false;
+
   Future<void> _selectImage() async {
-    final pickedImageFile = await ImagePicker()
-        .pickImage(
-      source: await showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Select Image Source'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(ImageSource.gallery),
-              child: const Text('Gallery'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(ImageSource.camera),
-              child: const Text('Camera'),
-            ),
-          ],
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    XFile? pickedImageFile;
+    try {
+      pickedImageFile = await ImagePicker().pickImage(
+        source: await showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('Select Image Source'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(ImageSource.gallery),
+                child: const Text('Gallery'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(ImageSource.camera),
+                child: const Text('Camera'),
+              ),
+            ],
+          ),
         ),
-      ),
-      imageQuality: 80,
-      maxWidth: 150,
-    )
-        .catchError((err) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Couldn\'t get because $err')));
-      return null;
-    });
+        imageQuality: 80,
+        maxWidth: 150,
+      );
+    } catch (err) {
+      scaffoldMessenger.showSnackBar(_snackBar('Failed to pick image'));
+    }
 
     if (pickedImageFile == null) return;
     setState(() {
       // widget.imagePickFn(pickedImageFile.path);
+      _fileImage = pickedImageFile!.path;
     });
   }
 
@@ -84,9 +84,8 @@ class _PickerState extends State<Picker> {
         _fileImage = null;
       });
       log(error.toString());
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Failed to launch URL'),
-      ));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(_snackBar('Failed to launch URL'));
     }
   }
 
@@ -104,14 +103,15 @@ class _PickerState extends State<Picker> {
           child: _fileImage == null
               ? const Center(child: Text('Image Preview'))
               : FittedBox(
-                  child: widget.isText
-                      ? Image.file(
+                  child: _isText
+                      ? Image.network(_fileImage!)
+                      : Image.file(
                           File(_fileImage!),
                           fit: BoxFit.cover,
-                        )
-                      : Image.network(_fileImage!),
+                        ),
                 ),
         ),
+        const SizedBox(height: 10),
         AnimatedCrossFade(
           firstChild: SizedBox(
             height: 60,
@@ -133,17 +133,28 @@ class _PickerState extends State<Picker> {
               focusNode: widget.focusNode,
               onFieldSubmitted: (value) => _selectNetworkImage(value),
               style: const TextStyle(color: Colors.black),
-              validator: (value) =>
-                  value!.isValidUrl() ? null : 'Not a valid url',
               onSaved: widget.onSaved,
             ),
           ),
-          crossFadeState: widget.isText
-              ? CrossFadeState.showFirst
-              : CrossFadeState.showSecond,
+          crossFadeState:
+              _isText ? CrossFadeState.showSecond : CrossFadeState.showFirst,
           duration: const Duration(milliseconds: 300),
+        ),
+        Switch(
+            value: _isText,
+            onChanged: (val) {
+              setState(() {
+                _isText = val;
+                _fileImage = null;
+              });
+            }),
+        const Text(
+          'Enter imageUrl',
+          style: TextStyle(color: Colors.black),
         ),
       ],
     );
   }
+
+  SnackBar _snackBar(String text) => SnackBar(content: Text(text));
 }
