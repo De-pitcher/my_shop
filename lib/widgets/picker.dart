@@ -63,6 +63,7 @@ class _PickerState extends State<Picker> {
     setState(() {
       // widget.imagePickFn(pickedImageFile.path);
       _fileImage = pickedImageFile!.path;
+      widget.controller!.text = _fileImage!;
     });
   }
 

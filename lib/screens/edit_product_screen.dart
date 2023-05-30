@@ -38,7 +38,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void initState() {
     //! The _imageUrlFocusNode was added to update the imageUrl preview when the
     //! on the TextFormField has been lost
-    _imageUrlFocusNode.addListener(_updateImageUrl);
+    // _imageUrlFocusNode.addListener(_updateImageUrl);
     super.initState();
   }
 
@@ -73,24 +73,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   void dispose() {
-    //! The _imageUrlFocusNode is disposed first to avoid memory leaks
-    _imageUrlFocusNode.removeListener(_updateImageUrl);
     _priceFocusNode.dispose();
     _descriptionFocusNode.dispose();
     _imageUrlController.dispose();
     super.dispose();
-  }
-
-  /// Rebuilds the UI when the [FocusNode] of the image URL has lost focus
-  void _updateImageUrl() {
-    if (!_imageUrlFocusNode.hasFocus) {
-      if (_imageUrlController.text.isEmpty ||
-          (!_imageUrlController.text.startsWith('http') &&
-              !_imageUrlController.text.startsWith('https'))) {
-        return;
-      }
-    }
-    setState(() {});
   }
 
   Future<void> _saveForm() async {
@@ -102,6 +88,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     setState(() {
       _isLoading = true;
     });
+    print('Debug product ${_editedProduct.toString()}');
     if (_editedProduct.id!.isNotEmpty) {
       await Provider.of<Products>(context, listen: false)
           .updateProduct(_editedProduct.id!, _editedProduct)
@@ -218,12 +205,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       focusNode: _imageUrlFocusNode,
                       onSaved: (value) {
                         if (value!.isNotEmpty) {
+                          print('Debug ImageUrl: $value');
                           _editedProduct =
                               _editedProduct.copyWith(imageUrl: value);
                         }
                       },
                     ),
-             
                   ],
                 ),
               ),

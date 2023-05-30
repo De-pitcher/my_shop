@@ -89,6 +89,7 @@ class ProductItem extends StatelessWidget {
               placeholder:
                   const AssetImage('assets/images/006 product-placeholder.png'),
               image: NetworkImage(product.imageUrl),
+              // image: FileImage(file),
               fit: BoxFit.cover,
             ),
           ),
