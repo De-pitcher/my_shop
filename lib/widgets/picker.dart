@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -61,10 +62,10 @@ class _PickerState extends State<Picker> {
 
     if (pickedImageFile == null) return;
     setState(() {
-      // widget.imagePickFn(pickedImageFile.path);
       _fileImage = pickedImageFile!.path;
-      widget.controller!.text = _fileImage!;
     });
+    final image = await pickedImageFile.readAsBytes();
+    widget.onSaved!(base64Encode(image));
   }
 
   Future<void> _selectNetworkImage(String? imageUrl) async {
@@ -105,7 +106,10 @@ class _PickerState extends State<Picker> {
               ? const Center(child: Text('Image Preview'))
               : FittedBox(
                   child: _isText
-                      ? Image.network(_fileImage!)
+                      ? Image.network(
+                          _fileImage!,
+                          errorBuilder: (_, __, ___) => const Icon(Icons.error),
+                        )
                       : Image.file(
                           File(_fileImage!),
                           fit: BoxFit.cover,

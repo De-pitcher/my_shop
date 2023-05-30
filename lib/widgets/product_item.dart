@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -18,6 +19,10 @@ class ProductItem extends StatelessWidget {
     final product = Provider.of<Product>(context);
     final cart = Provider.of<Cart>(context, listen: false);
     final authData = Provider.of<Auth>(context, listen: false);
+    final image = product.imageUrl.startsWith('https://') ||
+            product.imageUrl.startsWith('http://')
+        ? NetworkImage(product.imageUrl)
+        : MemoryImage(base64Decode(product.imageUrl));
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
@@ -88,8 +93,8 @@ class ProductItem extends StatelessWidget {
             child: FadeInImage(
               placeholder:
                   const AssetImage('assets/images/006 product-placeholder.png'),
-              image: NetworkImage(product.imageUrl),
-              // image: FileImage(file),
+              image: image as ImageProvider,
+              imageErrorBuilder: (_, __, ___) => const Icon(Icons.error),
               fit: BoxFit.cover,
             ),
           ),

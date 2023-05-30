@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,8 +23,23 @@ class UserProductItem extends StatelessWidget {
     final scaffold = ScaffoldMessenger.of(context);
     return ListTile(
       title: Text(title),
-      leading: CircleAvatar(
-        backgroundImage: NetworkImage(imageUrl),
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(32.0),
+        child: imageUrl.startsWith('http://') || imageUrl.startsWith('https://')
+            ? Image.network(
+                imageUrl,
+                errorBuilder: (_, __, ___) => const Icon(Icons.error),
+                height: 50,
+                width: 50,
+                fit: BoxFit.cover,
+              )
+            : Image.memory(
+                base64Decode(imageUrl),
+                errorBuilder: (_, __, ___) => const Icon(Icons.error),
+                height: 50,
+                width: 50,
+                fit: BoxFit.cover,
+              ),
       ),
       trailing: SizedBox(
         width: 100,
