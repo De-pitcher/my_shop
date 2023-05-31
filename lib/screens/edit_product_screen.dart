@@ -205,7 +205,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       focusNode: _imageUrlFocusNode,
                       onSaved: (value) {
                         if (value!.isNotEmpty) {
-                          print('Debug ImageUrl: $value');
                           _editedProduct =
                               _editedProduct.copyWith(imageUrl: value);
                         }

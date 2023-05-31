@@ -118,29 +118,8 @@ class _PickerState extends State<Picker> {
         ),
         const SizedBox(height: 10),
         AnimatedCrossFade(
-          firstChild: SizedBox(
-            height: 60,
-            width: MediaQuery.of(context).size.width,
-            child: ElevatedButton(
-              onPressed: _selectImage,
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor),
-              child: const Text('Add Product Image'),
-            ),
-          ),
-          secondChild: SizedBox(
-            height: 60,
-            child: TextFormField(
-              controller: widget.controller,
-              decoration: const InputDecoration(labelText: 'Input URL'),
-              keyboardType: TextInputType.url,
-              textInputAction: TextInputAction.done,
-              focusNode: widget.focusNode,
-              onFieldSubmitted: (value) => _selectNetworkImage(value),
-              style: const TextStyle(color: Colors.black),
-              onSaved: widget.onSaved,
-            ),
-          ),
+          firstChild: _buildAddProductButton(context),
+          secondChild: _buildTextfield(),
           crossFadeState:
               _isText ? CrossFadeState.showSecond : CrossFadeState.showFirst,
           duration: const Duration(milliseconds: 300),
@@ -159,6 +138,35 @@ class _PickerState extends State<Picker> {
         ),
       ],
     );
+  }
+
+  Widget _buildAddProductButton(BuildContext context) {
+    return SizedBox(
+          height: 60,
+          width: MediaQuery.of(context).size.width,
+          child: ElevatedButton(
+            onPressed: _selectImage,
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor),
+            child: const Text('Add Product Image'),
+          ),
+        );
+  }
+
+  Widget _buildTextfield() {
+    return SizedBox(
+          height: 60,
+          child: TextFormField(
+            controller: widget.controller,
+            decoration: const InputDecoration(labelText: 'Input URL'),
+            keyboardType: TextInputType.url,
+            textInputAction: TextInputAction.done,
+            focusNode: widget.focusNode,
+            onFieldSubmitted: (value) => _selectNetworkImage(value),
+            style: const TextStyle(color: Colors.black),
+            onSaved: widget.onSaved,
+          ),
+        );
   }
 
   SnackBar _snackBar(String text) => SnackBar(content: Text(text));
